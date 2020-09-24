@@ -11,48 +11,53 @@ const ENTITIES = {
 
 const ENT_REGEX = new RegExp(Object.keys(ENTITIES).join('|'), 'g')
 
-export function join (array, separator) {
-  if (separator === undefined || separator === null) {
+const $getEntity = (char) => ENTITIES[char]
+
+const $recurr = (sub) => {
+  if (sub.$safe) {
+    return sub.toString()
+  }
+  return Array.isArray(sub) ? join(sub, '').toString() : sub
+}
+
+const HtmlSafeString = (parts, subs) => {
+  const pairs = [['', parts[0]]]
+
+  for (let i = 0; i < subs.length; i++) {
+    const nextSub = subs[i]
+    pairs.push([
+      Array.isArray(nextSub) || nextSub.$safe ? nextSub : String(nextSub).replace(ENT_REGEX, $getEntity),
+      parts[i + 1]
+    ])
+  }
+
+  return {
+    $safe: true,
+    toString () {
+      let concat = ''
+      const n = pairs.length
+      for (let i = 0; i < n; i++) {
+        const next = pairs[i]
+        concat += $recurr(next[0]) + next[1]
+      }
+      return concat
+    }
+  }
+}
+
+const join = (array, separator) => {
+  if (separator == null) {
     separator = ','
   }
-  if (array.length <= 0) {
-    return new HtmlSafeString([''], [])
+  if (!array.length) {
+    return HtmlSafeString([''], [])
   }
-  return new HtmlSafeString(['', ...Array(array.length - 1).fill(separator), ''], array)
+  return HtmlSafeString(['', ...Array(array.length - 1).fill(separator), ''], array)
 }
 
-export function safe (value) {
-  return new HtmlSafeString([String(value)], [])
-}
+const safe = (value) => HtmlSafeString([String(value)], [])
 
-class HtmlSafeString {
-  constructor (parts, subs) {
-    this._parts = parts
-    this._subs = subs
-  }
+const escapeHtml = (parts, ...subs) => HtmlSafeString(parts, subs)
 
-  _escapeHtml (unsafe) {
-    if (unsafe instanceof HtmlSafeString) {
-      return unsafe
-    }
-    if (Array.isArray(unsafe)) {
-      return join(unsafe, '')
-    }
-    return String(unsafe).replace(ENT_REGEX, char => ENTITIES[char])
-  }
-
-  toString () {
-    return this._parts.reduce((result, part, i) => {
-      const sub = this._subs[i - 1]
-      return result + this._escapeHtml(sub) + part
-    })
-  }
-
-  inspect () {
-    return `${this.constructor.name} '${this.toString()}'`
-  }
-}
-
-export default function escapeHtml (parts, ...subs) {
-  return new HtmlSafeString(parts, subs)
-}
+export default escapeHtml
+export { join, safe }

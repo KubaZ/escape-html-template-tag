@@ -1,4 +1,4 @@
-# escape-html-template-tag
+# escape-html-template
 
 Construct string literals that have their substitutions escaped automatically.
 
@@ -9,10 +9,10 @@ Construct string literals that have their substitutions escaped automatically.
 ### Basic example
 
 ```js
-const escapeHtml = require('escape-html-template-tag')
+import html from 'escape-html-template'
 
 const title = 'All about < & >'
-const h1 = escapeHtml`
+const h1 = html`
   <h1>${title}</h1>
 `
 // <h1>All about &lt; &amp; &gt;</h1>
@@ -23,8 +23,8 @@ const h1 = escapeHtml`
 Escaped template literals can be nested and won't be interpollated again.
 
 ```js
-const h1 = escapeHtml`<h1>Hello World</h1>`;
-const article = escapeHtml`
+const h1 = html`<h1>Hello World</h1>`;
+const article = html`
   ${h1}
   I'ts me!
 `;
@@ -37,9 +37,9 @@ const article = escapeHtml`
 In case a value is an Array, the items will be individually escaped and concatenated.
 
 ```js
-const listOfSymbols = escapeHtml`
+const listOfSymbols = html`
   <ul>
-    ${['<', '&', '>'].map(item => escapeHtml`<li>symbol: ${item}</li>`)}
+    ${['<', '&', '>'].map(item => html`<li>symbol: ${item}</li>`)}
   </ul>
 `
 // <ul>
@@ -49,15 +49,17 @@ const listOfSymbols = escapeHtml`
 // </ul>
 ```
 
-### Don't interpollate html from trusted sources with `escapeHtml.safe()`
+### Don't interpollate html from trusted sources with `safe()`
 
-If you have html strings that already contain markup you can prevent it from being escaped with `escapeHtml.safe()`.
+If you have html strings that already contain markup you can prevent it from being escaped with `safe()`.
 
 ```js
+import html, { safe } from 'escape-html-template'
+
 const trustedString = '<a href="https://www.google.com">Google</a>'
-const navigation = escapeHtml`
+const navigation = html`
   <div>
-    ${escapeHtml.safe(trustedString)}
+    ${safe(trustedString)}
   </div>
 `
 // <div>
@@ -65,26 +67,28 @@ const navigation = escapeHtml`
 // </div>
 ```
 
-### Join fragments together with `escapeHtml.join`
+### Join fragments together with `join()`
 
 ```js
-const navigation = escapeHtml`
+import html, { join } from 'escape-html-template'
+
+const navigation = html`
   <div>
-    ${escapeHtml.join(
-      ['home', 'about', 'blog'].map(page => escapeHtml`<a href="/${page}">${page}</div>a>`),
+    ${join(
+      ['home', 'about', 'blog'].map((page) => html`<a href="/${page}">${page}</a>`),
       ' | '
     )}
   </div>
 `
 // <div>
-//   <a href="/home">home</div>a> | <a href="/about">about</div>a> | <a href="/blog">blog</div>a>
+//   <a href="/home">home</a> | <a href="/about">about</a> | <a href="/blog">blog</a>
 // </div>
 ```
 
 ### Compose templates easily with functions
 
 ```js
-const html = require('escape-html-template-tag')
+import html from 'escape-html-template'
 
 const anchor = (text, href) => html`<a href="${href}">${text}</a>`
 
