@@ -13,51 +13,49 @@ const ENT_REGEX = new RegExp(Object.keys(ENTITIES).join('|'), 'g')
 
 const $getEntity = (char) => ENTITIES[char]
 
-const $recurr = (sub) => {
-  if (sub.$safe) {
-    return sub.toString()
+const $replace = (unsafe) => String(unsafe).replace(ENT_REGEX, $getEntity)
+
+const $escape = (sub) => {
+  if (sub instanceof HtmlSafeString) {
+    return sub
   }
-  return Array.isArray(sub) ? join(sub, '').toString() : sub
-}
-
-const HtmlSafeString = (parts, subs) => {
-  const pairs = [['', parts[0]]]
-
-  for (let i = 0; i < subs.length; i++) {
-    const nextSub = subs[i]
-    pairs.push([
-      Array.isArray(nextSub) || nextSub.$safe ? nextSub : String(nextSub).replace(ENT_REGEX, $getEntity),
-      parts[i + 1]
-    ])
-  }
-
-  return {
-    $safe: true,
-    toString () {
-      let concat = ''
-      const n = pairs.length
-      for (let i = 0; i < n; i++) {
-        const next = pairs[i]
-        concat += $recurr(next[0]) + next[1]
-      }
-      return concat
+  if (Array.isArray(sub)) {
+    let res = ''
+    const n = sub.length
+    for (let i = 0; i < n; i++) {
+      res += sub[i] instanceof HtmlSafeString ? sub[i] : $replace(sub[i])
     }
+    return res
+  }
+  return $replace(sub)
+}
+
+class HtmlSafeString {
+  constructor (parts, subs) {
+    this.$p = parts
+    this.$s = subs
+  }
+
+  toString () {
+    let res = this.$p[0]
+    const n = this.$s.length
+    for (let i = 0; i < n; i++) {
+      res += $escape(this.$s[i]) + this.$p[i + 1]
+    }
+    return res
   }
 }
 
-const join = (array, separator) => {
-  if (separator == null) {
-    separator = ','
+const join = (subs, separator = ',') => {
+  if (subs.length) {
+    return new HtmlSafeString(['', ...new Array(subs.length - 1).fill(separator), ''], subs)
   }
-  if (!array.length) {
-    return HtmlSafeString([''], [])
-  }
-  return HtmlSafeString(['', ...Array(array.length - 1).fill(separator), ''], array)
+  return ''
 }
 
-const safe = (value) => HtmlSafeString([String(value)], [])
+const safe = (value) => new HtmlSafeString([String(value)], [])
 
-const escapeHtml = (parts, ...subs) => HtmlSafeString(parts, subs)
+const html = (parts, ...subs) => new HtmlSafeString(parts, subs)
 
-export default escapeHtml
+export default html
 export { join, safe }
