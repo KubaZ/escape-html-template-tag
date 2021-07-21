@@ -8,6 +8,6 @@ type StringLike = Stringifyable | string
 
 export function safe(value: StringLike): HtmlSafeString
 
-export function join(values: Array<StringLike>, separator?: StringLike | null): HtmlSafeString
+export function join(values: Array<StringLike>, separator?: StringLike | undefined): HtmlSafeString
 
-export default function escapeHtml(parts: TemplateStringsArray, ...subs: Array<StringLike>): HtmlSafeString
+export default function html(parts: TemplateStringsArray, ...subs: Array<StringLike>): HtmlSafeString

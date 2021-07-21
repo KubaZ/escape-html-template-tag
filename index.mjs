@@ -9,51 +9,35 @@ const ENTITIES = {
   '=': '&#x3D;'
 }
 
-const ENT_REGEX = new RegExp(Object.keys(ENTITIES).join('|'), 'g')
+const ENT_REGEX = /<|>|&|"|'|\/|=|`/g
 
-const $getEntity = (char) => ENTITIES[char]
-
-const $replace = (unsafe) => String(unsafe).replace(ENT_REGEX, $getEntity)
-
-const $escape = (sub) => {
-  if (sub instanceof HtmlSafeString) {
-    return sub
-  }
-  if (Array.isArray(sub)) {
-    let res = ''
-    const n = sub.length
-    for (let i = 0; i < n; i++) {
-      res += sub[i] instanceof HtmlSafeString ? sub[i] : $replace(sub[i])
-    }
-    return res
-  }
-  return $replace(sub)
-}
+const $getEntity = char => ENTITIES[char]
 
 class HtmlSafeString {
   constructor (parts, subs) {
-    this.$p = parts
-    this.$s = subs
+    this.$ = parts[0]
+    for (let i = 0; i < subs.length; i++) {
+      const sub = subs[i]
+      if (Array.isArray(sub)) for (let j = 0; j < sub.length; j++) this.$esc(sub[j])
+      else this.$esc(sub)
+      this.$ += parts[i + 1]
+    }
+  }
+
+  $esc (sub) {
+    this.$ += sub instanceof HtmlSafeString ? sub.$ : String(sub).replace(ENT_REGEX, $getEntity)
   }
 
   toString () {
-    let res = this.$p[0]
-    const n = this.$s.length
-    for (let i = 0; i < n; i++) {
-      res += $escape(this.$s[i]) + this.$p[i + 1]
-    }
-    return res
+    return this.$
   }
 }
 
-const join = (subs, separator = ',') => {
-  if (subs.length) {
-    return new HtmlSafeString(['', ...new Array(subs.length - 1).fill(separator), ''], subs)
-  }
-  return ''
-}
+const join = (subs, separator = ',') => subs.length
+  ? new HtmlSafeString(['', ...new Array(subs.length - 1).fill(separator), ''], subs)
+  : ''
 
-const safe = (value) => new HtmlSafeString([String(value)], [])
+const safe = value => new HtmlSafeString([String(value)], [])
 
 const html = (parts, ...subs) => new HtmlSafeString(parts, subs)
 
