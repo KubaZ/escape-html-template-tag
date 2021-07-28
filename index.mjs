@@ -1,15 +1,12 @@
 const ENTITIES = {
-  '&': '&amp;',
   '<': '&lt;',
   '>': '&gt;',
+  '&': '&amp;',
   '"': '&quot;',
-  "'": '&#39;',
-  '/': '&#x2F;',
-  '`': '&#x60;',
-  '=': '&#x3D;'
+  "'": '&#x27;'
 }
 
-const ENT_REGEX = /<|>|&|"|'|\/|=|`/g
+const ENT_REGEX = /<|>|&|"|'/g
 
 const $getEntity = char => ENTITIES[char]
 

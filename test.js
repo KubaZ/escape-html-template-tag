@@ -14,10 +14,7 @@ assert.strictEqual(String(H`${'&'}`), '&amp;')
 assert.strictEqual(String(H`${'<'}`), '&lt;')
 assert.strictEqual(String(H`${'>'}`), '&gt;')
 assert.strictEqual(String(H`${'"'}`), '&quot;')
-assert.strictEqual(String(H`${"'"}`), '&#39;')
-assert.strictEqual(String(H`${'/'}`), '&#x2F;')
-assert.strictEqual(String(H`${'`'}`), '&#x60;')
-assert.strictEqual(String(H`${'='}`), '&#x3D;')
+assert.strictEqual(String(H`${"'"}`), '&#x27;')
 
 // flattening arrays
 assert.strictEqual(String(H`${['a', 1, '<']}`), 'a1&lt;')
