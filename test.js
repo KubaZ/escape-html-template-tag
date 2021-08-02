@@ -27,6 +27,10 @@ assert.strictEqual(String(H`${H.safe(1)}`), '1')
 assert.strictEqual(String(H`${H.safe([1, 2, 3])}`), '1,2,3')
 assert.strictEqual(String(H`${H.safe(H`<a>`)}`), '<a>')
 
+// H.safeAttribute
+assert.strictEqual(String(H`${H.safeAttribute('"<&>')}`), '&quot;<&>')
+assert.strictEqual(String(H`${H.safeAttribute("'<&>")}`), '&#x27;<&>')
+
 // H.join
 assert.strictEqual(String(H.join([H`a`, H`b`, H`c`], ' ')), 'a b c')
 assert.strictEqual(String(H.join([H`a`, H`b`, H`c`])), 'a,b,c')

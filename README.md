@@ -67,6 +67,20 @@ const navigation = html`
 // </div>
 ```
 
+### Don't escape unnecessary characters from html attribute value with `safeAttribute()`
+
+If you have strings that contain html tag attribute values, you can use `safeAttribute()` function to escape only necessary characters - `'` and `"`.
+
+```js
+import html, { safeAttribute } from 'escape-html-template'
+
+const trustedString = 'https://www.google.com?search=test&page=123'
+const navigation = html`
+  <a href="${safeAttribute(trustedString)}">Google</a>
+`
+// <a href="https://www.google.com?search=test&page=123">Google</a>
+```
+
 ### Join fragments together with `join()`
 
 ```js

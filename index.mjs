@@ -1,4 +1,4 @@
-const ENTITIES = {
+const CHARACTER_REPLACEMENT_MAP = {
   '<': '&lt;',
   '>': '&gt;',
   '&': '&amp;',
@@ -6,9 +6,10 @@ const ENTITIES = {
   "'": '&#x27;'
 }
 
-const ENT_REGEX = /<|>|&|"|'/g
+const HTML_UNSAFE_CHARACTERS_REGEX = /<|>|&|"|'/g
+const ATTRIBUTE_UNSAFE_CHARACTERS_REGEX = /"|'/g
 
-const $getEntity = char => ENTITIES[char]
+const $getReplacementMap = char => CHARACTER_REPLACEMENT_MAP[char]
 
 class HtmlSafeString {
   constructor (parts, subs) {
@@ -22,11 +23,18 @@ class HtmlSafeString {
   }
 
   $esc (sub) {
-    this.$ += sub instanceof HtmlSafeString ? sub.$ : String(sub).replace(ENT_REGEX, $getEntity)
+    this.$ += sub instanceof HtmlSafeString ? sub.$ : String(sub).replace(HTML_UNSAFE_CHARACTERS_REGEX, $getReplacementMap)
   }
 
   toString () {
     return this.$
+  }
+}
+
+class HtmlAttributeSafeString extends HtmlSafeString {
+  constructor (value) {
+    super([String(value)], [])
+    this.$ = String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementMap)
   }
 }
 
@@ -35,8 +43,9 @@ const join = (subs, separator = ',') => subs.length
   : ''
 
 const safe = value => new HtmlSafeString([String(value)], [])
+const safeAttribute = value => new HtmlAttributeSafeString(value)
 
 const html = (parts, ...subs) => new HtmlSafeString(parts, subs)
 
 export default html
-export { join, safe }
+export { join, safe, safeAttribute }
