@@ -33,8 +33,10 @@ class HtmlSafeString {
 
 class HtmlAttributeSafeString extends HtmlSafeString {
   constructor (value) {
-    super([String(value)], [])
-    this.$ = String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)
+    super(
+      [String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)],
+      []
+    )
   }
 }
 
