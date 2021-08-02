@@ -31,21 +31,12 @@ class HtmlSafeString {
   }
 }
 
-class HtmlAttributeSafeString extends HtmlSafeString {
-  constructor (value) {
-    super(
-      [String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)],
-      []
-    )
-  }
-}
-
 const join = (subs, separator = ',') => subs.length
   ? new HtmlSafeString(['', ...new Array(subs.length - 1).fill(separator), ''], subs)
   : ''
 
 const safe = value => new HtmlSafeString([String(value)], [])
-const safeAttribute = value => new HtmlAttributeSafeString(value)
+const safeAttribute = value => new HtmlSafeString([String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)], [])
 
 const html = (parts, ...subs) => new HtmlSafeString(parts, subs)
 
