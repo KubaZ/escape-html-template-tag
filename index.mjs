@@ -9,7 +9,7 @@ const CHARACTER_REPLACEMENT_MAP = {
 const HTML_UNSAFE_CHARACTERS_REGEX = /<|>|&|"|'/g
 const ATTRIBUTE_UNSAFE_CHARACTERS_REGEX = /"|'/g
 
-const $getReplacementMap = char => CHARACTER_REPLACEMENT_MAP[char]
+const $getReplacementString = char => CHARACTER_REPLACEMENT_MAP[char]
 
 class HtmlSafeString {
   constructor (parts, subs) {
@@ -23,7 +23,7 @@ class HtmlSafeString {
   }
 
   $esc (sub) {
-    this.$ += sub instanceof HtmlSafeString ? sub.$ : String(sub).replace(HTML_UNSAFE_CHARACTERS_REGEX, $getReplacementMap)
+    this.$ += sub instanceof HtmlSafeString ? sub.$ : String(sub).replace(HTML_UNSAFE_CHARACTERS_REGEX, $getReplacementString)
   }
 
   toString () {
@@ -34,7 +34,7 @@ class HtmlSafeString {
 class HtmlAttributeSafeString extends HtmlSafeString {
   constructor (value) {
     super([String(value)], [])
-    this.$ = String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementMap)
+    this.$ = String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)
   }
 }
 
