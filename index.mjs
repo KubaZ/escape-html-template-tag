@@ -8,8 +8,14 @@ const CHARACTER_REPLACEMENT_MAP = {
 
 const HTML_UNSAFE_CHARACTERS_REGEX = /<|>|&|"|'/g
 const ATTRIBUTE_UNSAFE_CHARACTERS_REGEX = /"|'/g
+const WHITESPACE_REGEX = '[\\n\\r\\t]*'
+const MALICIOUS_PROTOCOL_REGEX = new RegExp(Array.from('javascript:', (char) => `${char}${WHITESPACE_REGEX}`).join(''), 'ig')
 
 const $getReplacementString = char => CHARACTER_REPLACEMENT_MAP[char]
+
+const sanitizeAttributeValue = value => value
+  .replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)
+  .replace(MALICIOUS_PROTOCOL_REGEX, '')
 
 class HtmlSafeString {
   constructor (parts, subs) {
@@ -36,7 +42,7 @@ const join = (subs, separator = ',') => subs.length
   : ''
 
 const safe = value => new HtmlSafeString([String(value)], [])
-const safeAttribute = value => new HtmlSafeString([String(value).replace(ATTRIBUTE_UNSAFE_CHARACTERS_REGEX, $getReplacementString)], [])
+const safeAttribute = value => new HtmlSafeString([sanitizeAttributeValue(String(value))], [])
 
 const html = (parts, ...subs) => new HtmlSafeString(parts, subs)
 

@@ -30,6 +30,7 @@ assert.strictEqual(String(H`${H.safe(H`<a>`)}`), '<a>')
 // H.safeAttribute
 assert.strictEqual(String(H`${H.safeAttribute('"<&>')}`), '&quot;<&>')
 assert.strictEqual(String(H`${H.safeAttribute("'<&>")}`), '&#x27;<&>')
+assert.strictEqual(String(H`${H.safeAttribute('ja\rVa\r\ns\nC\t\r\nript:<&>')}`), '<&>')
 
 // H.join
 assert.strictEqual(String(H.join([H`a`, H`b`, H`c`], ' ')), 'a b c')

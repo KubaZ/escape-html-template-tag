@@ -69,12 +69,12 @@ const navigation = html`
 
 ### Don't escape unnecessary characters from html attribute value with `safeAttribute()`
 
-If you have strings that contain html tag attribute values, you can use `safeAttribute()` function to escape only necessary characters - `'` and `"`.
+If you have strings that contain html tag attribute values, you can use `safeAttribute()` function to escape only necessary characters - `'` and `"`. This function also removes all occurrences of `javascript:` protocol from input string;
 
 ```js
 import html, { safeAttribute } from 'escape-html-template'
 
-const trustedString = 'https://www.google.com?search=test&page=123'
+const trustedString = 'javascript:https://www.google.com?search=test&page=123'
 const navigation = html`
   <a href="${safeAttribute(trustedString)}">Google</a>
 `
